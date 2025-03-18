@@ -9,10 +9,14 @@ import { HousingService } from '../housing.service';
   standalone: true,
   imports: [CommonModule, HousingLocationComponent],
   template: `
-     <section>
-    <form>  
-      <input type="text" placeholder="Filter by city" #filter (input)="filterResults(filter.value)">
-    </form>
+  <section>
+  <form>
+  <select id="city" #filter (change)="filterResults(filter.value)">
+    <option value="">All Locations</option>
+    <option *ngFor="let city of uniqueCities" [value]="city">{{ city }}</option>
+  </select>
+</form>
+
   </section>
   <section class="results">
     <app-housing-location 
@@ -29,6 +33,7 @@ export class HomeComponent {
   housingLocationList: HousingLocation[] = []; 
   housingService: HousingService = inject(HousingService);
   filteredLocationList: HousingLocation[] = [];
+  uniqueCities: string[] = [];
 
   filterResults(text: string) {
     if (!text) {
@@ -39,11 +44,15 @@ export class HomeComponent {
       housingLocation => housingLocation?.city.toLowerCase().includes(text.toLowerCase())
     );
   }
+  extractUniqueCities(): void {
+    this.uniqueCities = Array.from(new Set(this.housingLocationList.map(location => location.city)));
+  }
 
 constructor() {
   this.housingService.getAllHousingLocations().then((housingLocationList: HousingLocation[]) => {
     this.housingLocationList = housingLocationList;
     this.filteredLocationList = housingLocationList;
+    this.extractUniqueCities();
   });
 }
 }

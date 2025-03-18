@@ -8,41 +8,49 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [CommonModule,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   template: `
-  <article>
-    <img class="listing-photo" [src]="housingLocation?.photo"
-      alt="Exterior photo of {{housingLocation?.name}}"/>
-    <section class="listing-description">
-      <h2 class="listing-heading">{{housingLocation?.name}}</h2>
-      <p class="listing-location">{{housingLocation?.city}}, {{housingLocation?.state}}</p>
-    </section>
-    <section class="listing-features">
-      <h2 class="section-heading">About this housing location</h2>
-      <ul>
-        <li>Units available: {{housingLocation?.availableUnits}}</li>
-        <li>Wifi: {{housingLocation?.wifi?"Available":"Not available"}}</li>
-        <li>Laundry {{housingLocation?.laundry?"Available":"Not available"}}</li>
-      </ul>
-    </section>
-    <section class="listing-apply">
-      <h2 class="section-heading">Apply now to live here</h2>
-      <form [formGroup]="applyForm" (submit)="submitApplication()">
-        <label for="first-name">First Name</label>
-        <input id="first-name" type="text" formControlName="firstName">
+    <article>
+      <img class="listing-photo" [src]="housingLocation?.photo"
+        alt="Exterior photo of {{housingLocation?.name}}"/>
 
-        <label for="last-name">Last Name</label>
-        <input id="last-name" type="text" formControlName="lastName">
+      <section class="listing-description">
+        <h2 class="listing-heading">{{housingLocation?.name}}</h2>
+        <p class="listing-location">{{housingLocation?.city}}, {{housingLocation?.state}}</p>
+      </section>
 
-        <label for="email">Email</label>
-        <input id="email" type="email" formControlName="email">
-        <button type="submit" class="primary">Apply now</button>
-      </form>
-    </section>
-  </article>
-`,
+      <section class="listing-features">
+        <h2 class="section-heading">About this housing location</h2>
+        <ul>
+          <li>Units available: {{housingLocation?.availableUnits}}</li>
+          <li>Wifi: {{housingLocation?.wifi ? "Available" : "Not available"}}</li>
+          <li>Laundry: {{housingLocation?.laundry ? "Available" : "Not available"}}</li>
+        </ul>
+        <button class="primary" (click)="openModal()">Apply Now</button>
+      </section>
+
+      <!-- Modal -->
+      <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+        <div class="popup-modal" (click)="$event.stopPropagation()">
+          <div class="modal-content">
+            <h2>Apply now to live here</h2>
+            <form [formGroup]="applyForm" (submit)="submitApplication()">
+              <label for="first-name">First Name</label>
+              <input id="first-name" type="text" formControlName="firstName">
+
+              <label for="last-name">Last Name</label>
+              <input id="last-name" type="text" formControlName="lastName">
+
+              <label for="email">Email</label>
+              <input id="email" type="email" formControlName="email">
+
+              <button type="submit" class="primary">Submit Application</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </article>
+  `,
   styleUrls: ['./details.component.css']
 })
 export class DetailsComponent {
@@ -56,18 +64,33 @@ export class DetailsComponent {
     lastName: new FormControl(''),
     email: new FormControl('')
   });
+
+  showModal: boolean = false;
+
   constructor() {
     const housingLocationId = parseInt(this.route.snapshot.params['id'], 10);
     this.housingService.getHousingLocationById(housingLocationId).then(housingLocation => {
-    this.housingLocation = housingLocation;
+      this.housingLocation = housingLocation;
     });
   }
+
+  // Open the modal
+  openModal() {
+    this.showModal = true;
+  }
+
+  // Close the modal (also triggered by clicking outside the modal)
+  closeModal() {
+    this.showModal = false;
+  }
+
+  // Handle form submission
   submitApplication() {
     this.housingService.submitApplication(
       this.applyForm.value.firstName ?? '',
       this.applyForm.value.lastName ?? '',
       this.applyForm.value.email ?? ''
     );
+    this.closeModal(); // Close modal after submitting
   }
 }
-
