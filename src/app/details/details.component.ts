@@ -73,24 +73,18 @@ export class DetailsComponent {
       this.housingLocation = housingLocation;
     });
   }
-
-  // Open the modal
   openModal() {
     this.showModal = true;
   }
-
-  // Close the modal (also triggered by clicking outside the modal)
   closeModal() {
     this.showModal = false;
   }
-
-  // Handle form submission
   submitApplication() {
     this.housingService.submitApplication(
       this.applyForm.value.firstName ?? '',
       this.applyForm.value.lastName ?? '',
       this.applyForm.value.email ?? ''
     );
-    this.closeModal(); // Close modal after submitting
+    this.closeModal();
   }
 }
