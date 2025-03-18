@@ -1,13 +1,13 @@
-### Housing Location Finder
+# Housing Location Finder
 A simple Angular application that displays housing locations and allows users to filter by city.
 
-# Features
+### Features
 - View a list of available housing locations.
 - Filter locations in real time by city.
 - Click on a housing location to view details.
 -  Uses a fake backend (JSON Server) to serve housing data.
 
-# Installation & Setup
+### Installation & Setup
 1️⃣ Clone the Repository
 git clone https://github.com/asl1n/Housing.git
 cd Housing
